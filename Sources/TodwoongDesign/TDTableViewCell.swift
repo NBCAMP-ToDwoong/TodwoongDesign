@@ -229,7 +229,7 @@ extension TDTableViewCell {
     }
     
     @objc private func locationButtonTapped() {
-        onCheckButtonTapped?()
+        onLocationButtonTapped?()
     }
 }
 

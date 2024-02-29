@@ -1,7 +1,7 @@
 
 import UIKit
 
-public class TDCollectionViewCell: UICollectionViewCell {
+private class TDCollectionViewCell: UICollectionViewCell {
     
     // MARK: - Properties
     

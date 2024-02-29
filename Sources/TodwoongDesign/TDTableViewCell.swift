@@ -5,8 +5,16 @@ public class TDTableViewCell: UITableViewCell {
     
     // MARK: - Properties
     
-    static public var identifier = "TDTableViewCellIdentifier"
+    public static var identifier = "TDTableViewCellIdentifier"
+    
     public var onCheckButtonTapped: (() -> Void)?
+    public var onLocationButtonTapped: (() -> Void)?
+    
+    private var locationStackBottomConstraintTrue: NSLayoutConstraint?
+    private var locationStackBottom8ConstraintFalse: NSLayoutConstraint?
+    private var locationStackBottom0ConstraintFalse: NSLayoutConstraint?
+    private var dateTimeStackBottomConstraint: NSLayoutConstraint?
+    private var titleStackBottomConstraint: NSLayoutConstraint?
     
     // MARK: - UI Properties
     
@@ -23,7 +31,7 @@ public class TDTableViewCell: UITableViewCell {
     
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
-        label.font = TDStyle.font.body(style: .regular)
+        label.font = TDStyle.font.body(style: .bold)
         label.textColor = TDStyle.color.primaryLabel
         label.numberOfLines = 0
         
@@ -67,7 +75,15 @@ public class TDTableViewCell: UITableViewCell {
         return label
     }()
     
-    private lazy var timeAlarmIcon = UIImageView.createIconImageView(systemName: "bell", tintColor: TDStyle.color.textGreen, width: 14, height: 14)
+    private lazy var timeAlarmIcon: UIImageView = {
+        let imageView = UIImageView()
+        
+        imageView.image = UIImage(systemName: "bell.fill")?.resized(
+                to: CGSize(width: 16, height: 16)
+        )?.withTintColor(TDStyle.color.secondaryLabel, renderingMode: .alwaysOriginal)
+        
+        return imageView
+    }()
     
     private lazy var dateTimeStack: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [dateLabel, timeLabel, timeAlarmIcon])
@@ -80,39 +96,46 @@ public class TDTableViewCell: UITableViewCell {
         return stackView
     }()
     
-    
-    private lazy var locationIcon = UIImageView.createIconImageView(systemName: "mappin.circle.fill", tintColor: .systemRed, width: 14, height: 14)
-    
-    private lazy var locationLabel: UILabel = {
-        let label = UILabel()
-        label.font = TDStyle.font.subheadline(style: .regular)
-        label.textColor = TDStyle.color.primaryLabel
-        label.numberOfLines = 0
+    private lazy var locationAlarmIcon = {
+        let imageView = UIImageView()
         
-        return label
+        imageView.image = UIImage(systemName: "bell.fill")?.resized(
+            to: CGSize(width: 16, height: 16)
+        )?.withTintColor(TDStyle.color.secondaryLabel, renderingMode: .alwaysOriginal)
+        
+        return imageView
     }()
     
-    private lazy var locationAlarmIcon = UIImageView.createIconImageView(systemName: "bell", tintColor: TDStyle.color.textGreen, width: 14, height: 14)
-    
-    private lazy var locationInfoStack: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [locationIcon, locationLabel])
-        stackView.axis = .horizontal
-        stackView.spacing = 4
-        stackView.alignment = .fill
-        stackView.distribution = .fill
-        stackView.translatesAutoresizingMaskIntoConstraints = false
+    private lazy var locationButton: UIButton = {
+        var config = UIButton.Configuration.filled()
+        let pinImage = UIImage(systemName: "mappin.circle.fill")?
+            .resized(to: CGSize(width: 16, height: 16))?.withTintColor(.systemRed, renderingMode: .alwaysOriginal)
         
-        stackView.backgroundColor = TDStyle.color.lightGray
-        stackView.layer.cornerRadius = 5
-        stackView.layoutMargins = UIEdgeInsets(top: 4, left: 8, bottom: 4, right: 8)
-        stackView.isLayoutMarginsRelativeArrangement = true
+        config.image = pinImage
+        config.baseForegroundColor = TDStyle.color.primaryLabel
+        config.background.backgroundColor = TDStyle.color.lightGray
         
+        config.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { style in
+            var title = style
+            title.font = TDStyle.font.subheadline(style: .regular)
+            return title
+        }
         
-        return stackView
+        config.cornerStyle = .fixed
+        config.contentInsets = NSDirectionalEdgeInsets(top: 4, leading: 6, bottom: 4, trailing: 6)
+        
+        config.imagePadding = 8
+
+        let button = UIButton(configuration: config, primaryAction: UIAction(handler: { [weak self] _ in
+            self?.locationButtonTapped()
+        }))
+        
+        return button
     }()
+
     
     private lazy var locationStack: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [locationInfoStack, locationAlarmIcon])
+        let stackView = UIStackView(arrangedSubviews: [locationButton, locationAlarmIcon])
         stackView.axis = .horizontal
         stackView.spacing = 6
         stackView.alignment = .center
@@ -121,12 +144,22 @@ public class TDTableViewCell: UITableViewCell {
         
         return stackView
     }()
-
+    
+    private lazy var divider: UIView = {
+        let view = UIView()
+        
+        view.backgroundColor = .lightGray
+        view.translatesAutoresizingMaskIntoConstraints = false
+        
+        return view
+    }()
+    
     // MARK: - Life Cycle
-
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        backgroundColor = .white
+        
+        setUI()
         setLayout()
     }
     
@@ -138,15 +171,15 @@ public class TDTableViewCell: UITableViewCell {
 // MARK: - Extensions
 
 extension TDTableViewCell {
-    @objc private func checkButtonTapped() {
-        onCheckButtonTapped?()
+    private func setUI() {
+        backgroundColor = .white
+        
+        [checkButton, titleStack, dateTimeStack, locationStack].forEach {
+            contentView.addSubview($0)
+        }
     }
     
     private func setLayout() {
-        contentView.addSubview(checkButton)
-        contentView.addSubview(titleStack)
-        contentView.addSubview(dateTimeStack)
-        contentView.addSubview(locationStack)
         
         NSLayoutConstraint.activate([
             checkButton.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
@@ -163,15 +196,40 @@ extension TDTableViewCell {
             dateTimeStack.topAnchor.constraint(equalTo: titleStack.bottomAnchor, constant: 10),
             dateTimeStack.leadingAnchor.constraint(equalTo: checkButton.trailingAnchor, constant: 16),
         ])
-
-        locationIcon.widthAnchor.constraint(equalToConstant: 20).isActive = true
-        locationInfoStack.widthAnchor.constraint(lessThanOrEqualToConstant: UIScreen.main.bounds.width * 0.7).isActive = true
         
         NSLayoutConstraint.activate([
             locationStack.topAnchor.constraint(equalTo: dateTimeStack.bottomAnchor, constant: 6),
-            locationStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16),
             locationStack.leadingAnchor.constraint(equalTo: checkButton.trailingAnchor, constant: 16),
         ])
+        
+        // 하단 여백 조절 Auto Layout
+        
+        locationStackBottomConstraintTrue = locationStack.bottomAnchor.constraint(
+            equalTo: contentView.bottomAnchor,
+            constant: -16)
+        locationStackBottomConstraintTrue?.isActive = true
+        
+        locationStackBottom8ConstraintFalse = locationStack.bottomAnchor.constraint(
+            equalTo: contentView.bottomAnchor,
+            constant: -8)
+        locationStackBottom8ConstraintFalse?.isActive = false
+        
+        
+        locationStackBottom0ConstraintFalse = locationStack.bottomAnchor.constraint(
+            equalTo: contentView.bottomAnchor,
+            constant: 0)
+        locationStackBottom0ConstraintFalse?.isActive = false
+    }
+}
+
+// MARK: -
+extension TDTableViewCell {
+    @objc private func checkButtonTapped() {
+        onCheckButtonTapped?()
+    }
+    
+    @objc private func locationButtonTapped() {
+        onCheckButtonTapped?()
     }
 }
 
@@ -193,6 +251,7 @@ extension TDTableViewCell {
             dateLabel.text = formatter.string(from: dueDate)
         } else {
             dateLabel.isHidden = true
+            
         }
         
         if let dueTime = data.dueTime {
@@ -205,12 +264,22 @@ extension TDTableViewCell {
             timeLabel.isHidden = true
         }
         
-        // 위치 정보 설정
         if let location = data.place {
-            locationLabel.text = "\(location)"
+            locationButton.setTitle(location, for: .normal)
         } else {
-            locationInfoStack.isHidden = true
+            locationButton.isHidden = true
             locationStack.isHidden = true
+            
+            locationStackBottomConstraintTrue?.isActive = false
+            if data.dueDate != nil {
+                locationStackBottom0ConstraintFalse?.isActive = false
+                locationStackBottom8ConstraintFalse?.isActive = true
+            } else {
+                locationStackBottom0ConstraintFalse?.isActive = true
+                locationStackBottom8ConstraintFalse?.isActive = false
+            }
+            
+            contentView.layoutIfNeeded()
         }
         
         if data.timeAlarm == false {

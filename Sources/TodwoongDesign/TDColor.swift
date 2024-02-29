@@ -4,7 +4,7 @@ import UIKit
 public class TDColor {
     
     // Gray
-    public let lightGray = UIColor(hex: "#F2F2F7")
+    public let lightGray = UIColor(hex: "#F2F2F7")!
     
     // Theme Color
     public let mainTheme = UIColor(hex: "#5DB075")!

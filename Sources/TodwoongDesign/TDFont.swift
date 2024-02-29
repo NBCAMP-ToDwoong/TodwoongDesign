@@ -1,7 +1,7 @@
 
 import UIKit
 
-public class TDFonts {
+public class TDFont {
     
     public init() {}
     

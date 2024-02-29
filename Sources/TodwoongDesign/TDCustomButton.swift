@@ -1,7 +1,7 @@
 
 import UIKit
 
-public class TDCustomButtons: UIButton {
+public class TDCustomButton: UIButton {
     
     public enum ButtonStyle {
         case chip

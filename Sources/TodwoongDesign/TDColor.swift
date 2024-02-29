@@ -1,7 +1,7 @@
 
 import UIKit
 
-public class TDColors {
+public class TDColor {
     
     // Gray
     public let lightGray = UIColor(hex: "#F2F2F7")

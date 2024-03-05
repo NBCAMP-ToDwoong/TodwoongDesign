@@ -7,23 +7,23 @@
 
 import Foundation
 
-public struct CategoryStruct {
+public class CategoryModel {
     public var id: UUID?
     public var title: String
     public var color: String?
     public var indexNumber: Int32?
-    public var todoId: UUID?
-
-    public init(id: UUID?, title: String, color: String?, indexNumber: Int32?, todoId: UUID?) {
+    public var todo: TodoModel?
+    
+    public init(id: UUID?, title: String, color: String?, indexNumber: Int32?, todo: TodoModel?) {
         self.id = id
         self.title = title
         self.color = color
         self.indexNumber = indexNumber
-        self.todoId = todoId
+        self.todo = todo
     }
 }
 
-public struct TodoStruct {
+public class TodoModel{
     public var id: UUID?
     public var title: String
     public var dueDate: Date?
@@ -33,9 +33,19 @@ public struct TodoStruct {
     public var fixed: Bool
     public var timeAlarm: Bool
     public var placeAlarm: Bool
-    public var categoryId: UUID?
-
-    public init(id: UUID?, title: String, dueDate: Date?, dueTime: Date?, place: String?, isCompleted: Bool, fixed: Bool, timeAlarm: Bool, placeAlarm: Bool, categoryId: UUID?) {
+    public weak var category: CategoryModel?
+    
+    public init(id: UUID?,
+                title: String,
+                dueDate: Date?,
+                dueTime: Date?,
+                place: String?,
+                isCompleted: Bool,
+                fixed: Bool,
+                timeAlarm: Bool,
+                placeAlarm: Bool,
+                category: CategoryModel?
+    ) {
         self.id = id
         self.title = title
         self.dueDate = dueDate
@@ -45,6 +55,6 @@ public struct TodoStruct {
         self.fixed = fixed
         self.timeAlarm = timeAlarm
         self.placeAlarm = placeAlarm
-        self.categoryId = categoryId
+        self.category = category
     }
 }

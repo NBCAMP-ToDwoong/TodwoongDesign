@@ -172,6 +172,7 @@ public class TDTableViewCell: UITableViewCell {
 
 extension TDTableViewCell {
     private func setUI() {
+        selectionStyle = .none
         backgroundColor = .white
         
         [checkButton, titleStack, dateTimeStack, locationStack].forEach {

@@ -12,7 +12,7 @@ public class CategoryModel {
     public var title: String
     public var color: String?
     public var indexNumber: Int32?
-    public var todo: TodoModel?
+    public weak var todo: TodoModel?
     
     public init(id: UUID?, title: String, color: String?, indexNumber: Int32?, todo: TodoModel?) {
         self.id = id
@@ -23,7 +23,7 @@ public class CategoryModel {
     }
 }
 
-public class TodoModel{
+public class TodoModel {
     public var id: UUID?
     public var title: String
     public var dueDate: Date?
@@ -33,7 +33,7 @@ public class TodoModel{
     public var fixed: Bool
     public var timeAlarm: Bool
     public var placeAlarm: Bool
-    public weak var category: CategoryModel?
+    public var category: CategoryModel?
     
     public init(id: UUID?,
                 title: String,

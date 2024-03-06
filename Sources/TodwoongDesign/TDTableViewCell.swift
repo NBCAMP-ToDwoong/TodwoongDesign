@@ -66,18 +66,8 @@ public class TDTableViewCell: UITableViewCell {
         return label
     }()
     
-    private lazy var timeAlarmIcon: UIImageView = {
-        let imageView = UIImageView()
-        
-        imageView.image = UIImage(systemName: "bell.fill")?.resized(
-                to: CGSize(width: 16, height: 16)
-        )?.withTintColor(TDStyle.color.secondaryLabel, renderingMode: .alwaysOriginal)
-        
-        return imageView
-    }()
-    
     private lazy var dateTimeStack: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [dateLabel, timeLabel, timeAlarmIcon])
+        let stackView = UIStackView(arrangedSubviews: [dateLabel, timeLabel])
         stackView.axis = .horizontal
         stackView.spacing = 6
         stackView.alignment = .center
@@ -85,16 +75,6 @@ public class TDTableViewCell: UITableViewCell {
         stackView.translatesAutoresizingMaskIntoConstraints = false
         
         return stackView
-    }()
-    
-    private lazy var locationAlarmIcon = {
-        let imageView = UIImageView()
-        
-        imageView.image = UIImage(systemName: "bell.fill")?.resized(
-            to: CGSize(width: 16, height: 16)
-        )?.withTintColor(TDStyle.color.secondaryLabel, renderingMode: .alwaysOriginal)
-        
-        return imageView
     }()
     
     private lazy var locationButton: UIButton = {
@@ -123,7 +103,7 @@ public class TDTableViewCell: UITableViewCell {
 
     
     private lazy var locationStack: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [locationButton, locationAlarmIcon])
+        let stackView = UIStackView(arrangedSubviews: [locationButton])
         stackView.axis = .horizontal
         stackView.spacing = 6
         stackView.alignment = .center
@@ -232,7 +212,7 @@ extension TDTableViewCell {
         locationButton.setImage(iconImage.resized(to: CGSize(width: 16, height: 16)), for: .normal)
     }
     
-    public func configure(data: TodoModel2) {
+    public func configure(data: TodoModel) {
         titleLabel.text = data.title
         
         if let category = data.category {
@@ -276,18 +256,6 @@ extension TDTableViewCell {
             }
             
             contentView.layoutIfNeeded()
-        }
-        
-        if data.timeAlarm == false {
-            timeAlarmIcon.isHidden = true
-        } else {
-            timeAlarmIcon.isHidden = false
-        }
-        
-        if data.placeAlarm == false {
-            locationAlarmIcon.isHidden = true
-        } else {
-            locationAlarmIcon.isHidden = false
         }
     }
     

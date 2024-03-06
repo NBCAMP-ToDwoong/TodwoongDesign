@@ -208,11 +208,9 @@ extension TDTableViewCell {
 // MARK: - Configure Method
 
 extension TDTableViewCell {
-    public func setLocationIcon(iconImage: UIImage) {
+    public func configure(data: TodoModel, iconImage: UIImage) {
         locationButton.setImage(iconImage.resized(to: CGSize(width: 16, height: 16)), for: .normal)
-    }
-    
-    public func configure(data: TodoModel) {
+        
         titleLabel.text = data.title
         
         if let category = data.category {

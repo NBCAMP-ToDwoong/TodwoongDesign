@@ -34,6 +34,7 @@ public class TDTableViewCell: UITableViewCell {
         label.font = TDStyle.font.body(style: .bold)
         label.textColor = TDStyle.color.primaryLabel
         label.numberOfLines = 0
+        label.translatesAutoresizingMaskIntoConstraints = false
         
         return label
     }()
@@ -44,19 +45,9 @@ public class TDTableViewCell: UITableViewCell {
         label.textColor = TDStyle.color.textGreen
         label.numberOfLines = 0
         label.textAlignment = .right
+        label.translatesAutoresizingMaskIntoConstraints = false
         
         return label
-    }()
-    
-    private lazy var titleStack: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [titleLabel, groupLabel])
-        stackView.axis = .horizontal
-        stackView.spacing = 8
-        stackView.alignment = .firstBaseline
-        stackView.distribution = .equalSpacing
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        
-        return stackView
     }()
     
     private lazy var dateLabel: UILabel = {
@@ -108,10 +99,7 @@ public class TDTableViewCell: UITableViewCell {
     
     private lazy var locationButton: UIButton = {
         var config = UIButton.Configuration.filled()
-        let pinImage = UIImage(systemName: "mappin.circle.fill")?
-            .resized(to: CGSize(width: 16, height: 16))?.withTintColor(.systemRed, renderingMode: .alwaysOriginal)
         
-        config.image = pinImage
         config.baseForegroundColor = TDStyle.color.primaryLabel
         config.background.backgroundColor = TDStyle.color.lightGray
         
@@ -175,7 +163,7 @@ extension TDTableViewCell {
         selectionStyle = .none
         backgroundColor = .white
         
-        [checkButton, titleStack, dateTimeStack, locationStack].forEach {
+        [checkButton, titleLabel, groupLabel, dateTimeStack, locationStack].forEach {
             contentView.addSubview($0)
         }
     }
@@ -188,13 +176,16 @@ extension TDTableViewCell {
         ])
         
         NSLayoutConstraint.activate([
-            titleStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
-            titleStack.leadingAnchor.constraint(equalTo: checkButton.trailingAnchor, constant: 16),
-            titleStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
+            groupLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
+            titleLabel.leadingAnchor.constraint(equalTo: checkButton.trailingAnchor, constant: 16),
+            groupLabel.leadingAnchor.constraint(equalTo: titleLabel.trailingAnchor, constant: 8),
+            groupLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            groupLabel.widthAnchor.constraint(greaterThanOrEqualTo: contentView.widthAnchor, multiplier: 0.15)
         ])
         
         NSLayoutConstraint.activate([
-            dateTimeStack.topAnchor.constraint(equalTo: titleStack.bottomAnchor, constant: 10),
+            dateTimeStack.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
             dateTimeStack.leadingAnchor.constraint(equalTo: checkButton.trailingAnchor, constant: 16),
         ])
         
@@ -223,7 +214,7 @@ extension TDTableViewCell {
     }
 }
 
-// MARK: -
+// MARK: - @objc Method
 extension TDTableViewCell {
     @objc private func checkButtonTapped() {
         onCheckButtonTapped?()
@@ -237,11 +228,15 @@ extension TDTableViewCell {
 // MARK: - Configure Method
 
 extension TDTableViewCell {
-    public func configure(data: TodoModel) {
+    public func setLocationIcon(iconImage: UIImage) {
+        locationButton.setImage(iconImage.resized(to: CGSize(width: 16, height: 16)), for: .normal)
+    }
+    
+    public func configure(data: TodoModel2) {
         titleLabel.text = data.title
         
         if let category = data.category {
-            groupLabel.text = "#\(category)"
+            groupLabel.text = "#\(category.title)"
         } else {
             groupLabel.text = ""
         }

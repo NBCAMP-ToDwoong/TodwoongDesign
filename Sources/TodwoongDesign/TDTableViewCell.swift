@@ -139,9 +139,18 @@ public class TDTableViewCell: UITableViewCell {
         super.prepareForReuse()
         
         titleLabel.text = ""
+        
         groupLabel.text = ""
+        
         dateLabel.text = ""
+        dateLabel.isHidden = false
+        
+        timeLabel.text = ""
+        timeLabel.isHidden = false
+        
         locationButton.setTitle("", for: .normal)
+        locationButton.isHidden = false
+        locationStack.isHidden = false
     }
 }
 
@@ -249,6 +258,7 @@ extension TDTableViewCell {
         
         if let location = data.place {
             locationButton.setTitle(location, for: .normal)
+            locationStackBottomConstraintTrue?.isActive = true
         } else {
             locationButton.isHidden = true
             locationStack.isHidden = true
@@ -261,8 +271,6 @@ extension TDTableViewCell {
                 locationStackBottom0ConstraintFalse?.isActive = true
                 locationStackBottom8ConstraintFalse?.isActive = false
             }
-            
-            contentView.layoutIfNeeded()
         }
     }
     

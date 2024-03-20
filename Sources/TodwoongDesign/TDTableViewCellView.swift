@@ -211,6 +211,7 @@ extension TDTableViewCellView {
 extension TDTableViewCellView {
     func configure(title: String,
                    group: String?,
+                   groupColor: String?,
                    dueTime: Date?,
                    placeName: String?,
                    iconImage: UIImage) {
@@ -221,6 +222,7 @@ extension TDTableViewCellView {
         groupLabelWidthConstraint?.isActive = false
         if let groupTitle = group {
             groupLabel.text = "#\(groupTitle)"
+            groupLabel.textColor = UIColor(hex: groupColor ?? "#5DB075")?.adjustColor(brightnessDecreaseFactor: 0.25, saturationIncreaseFactor: 0.4)
             groupLabelWidthConstraint = groupLabel.widthAnchor.constraint(greaterThanOrEqualTo: widthAnchor, multiplier: 0.15)
         } else {
             groupLabel.text = ""

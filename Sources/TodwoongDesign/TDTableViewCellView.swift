@@ -216,7 +216,7 @@ extension TDTableViewCellView {
 }
 
 extension TDTableViewCellView {
-    func configure(title: String,
+    public func configure(title: String,
                    group: String?,
                    groupColor: String?,
                    dueTime: Date?,

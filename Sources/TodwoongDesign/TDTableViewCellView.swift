@@ -194,7 +194,7 @@ extension TDTableViewCellView {
         }
     }
     
-    func resetData() {
+    public func resetData() {
         titleLabel.text = ""
         groupLabel.text = ""
         dateLabel.text = ""

@@ -35,6 +35,42 @@ extension UIColor {
         return nil
     }
     
+    func adjustColor(brightnessDecreaseFactor: CGFloat = 0.2, saturationIncreaseFactor: CGFloat = 0.2) -> UIColor {
+        var hue: CGFloat = 0
+        var saturation: CGFloat = 0
+        var brightness: CGFloat = 0
+        var alpha: CGFloat = 0
+
+        if self.getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha) {
+            let adjustedBrightness = max(brightness - brightnessDecreaseFactor, 0)
+            let adjustedSaturation = min(saturation + saturationIncreaseFactor, 1)
+            return UIColor(hue: hue, saturation: adjustedSaturation, brightness: adjustedBrightness, alpha: alpha)
+        } else {
+            return UIColor(red: max(0, self.redComponent - brightnessDecreaseFactor),
+                           green: max(0, self.greenComponent - brightnessDecreaseFactor),
+                           blue: max(0, self.blueComponent - brightnessDecreaseFactor),
+                           alpha: alpha)
+        }
+    }
+    
+    private var redComponent: CGFloat {
+        var red: CGFloat = 0
+        self.getRed(&red, green: nil, blue: nil, alpha: nil)
+        return red
+    }
+    
+    private var greenComponent: CGFloat {
+        var green: CGFloat = 0
+        self.getRed(nil, green: &green, blue: nil, alpha: nil)
+        return green
+    }
+    
+    private var blueComponent: CGFloat {
+        var blue: CGFloat = 0
+        self.getRed(nil, green: nil, blue: &blue, alpha: nil)
+        return blue
+    }
+    
     var isLight: Bool {
         var white: CGFloat = 0.0
         getWhite(&white, alpha: nil)

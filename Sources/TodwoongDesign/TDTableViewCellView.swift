@@ -14,17 +14,23 @@ public class TDTableViewCellView: UIView {
     public var onCheckButtonTapped: (() -> Void)?
     public var onLocationButtonTapped: (() -> Void)?
     
-    private var locationStackBottomConstraintTrue: NSLayoutConstraint?
-    private var locationStackBottom8ConstraintFalse: NSLayoutConstraint?
-    private var locationStackBottom0ConstraintFalse: NSLayoutConstraint?
-    private var dateTimeStackBottomConstraint: NSLayoutConstraint?
-    private var titleStackBottomConstraint: NSLayoutConstraint?
-    private var groupLabelWidthConstraint: NSLayoutConstraint?
+    private lazy var titleLabelBottomAnchorConstraint =
+    titleLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16)
+    private lazy var groupLabelWidthConstraint =
+    groupLabel.widthAnchor.constraint(equalToConstant: 0)
+    private lazy var dateLabelBottomAnchorConstraint =
+    dateLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16)
+    private lazy var locationStackTopAnchorConstraintToTitleLabel =
+    locationStack.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10)
+    private lazy var locationStackTopAnchorConstraintToDateLabel =
+    locationStack.topAnchor.constraint(equalTo: dateLabel.bottomAnchor, constant: 8)
+    private lazy var locationStackBottomAnchorConstraint =
+    locationStack.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16)
     
     // MARK: - UI Properties
     
     public lazy var checkButton: UIButton = {
-        let button = UIButton(type: .system)
+        let button = UIButton()
         let symbolConfiguration = UIImage.SymbolConfiguration(pointSize: 22, weight: .medium, scale: .medium)
         button.setPreferredSymbolConfiguration(symbolConfiguration, forImageIn: .normal)
         button.setPreferredSymbolConfiguration(symbolConfiguration, forImageIn: .selected)
@@ -155,48 +161,51 @@ extension TDTableViewCellView {
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 16),
             titleLabel.leadingAnchor.constraint(equalTo: checkButton.trailingAnchor, constant: 16),
+            titleLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16)
         ])
         
-        if group != nil {
-            NSLayoutConstraint.activate([
-                groupLabel.widthAnchor.constraint(equalToConstant: 80),
-                groupLabel.topAnchor.constraint(equalTo: topAnchor, constant: 16),
-                groupLabel.leadingAnchor.constraint(equalTo: titleLabel.trailingAnchor, constant: 8),
-                groupLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
-            ])
-        } else {
-            NSLayoutConstraint.activate([
-                groupLabel.widthAnchor.constraint(equalToConstant: 0),
-                titleLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
-            ])
-        }
+        NSLayoutConstraint.activate([
+            groupLabel.widthAnchor.constraint(equalToConstant: 80),
+            groupLabel.topAnchor.constraint(equalTo: topAnchor, constant: 16),
+            groupLabel.leadingAnchor.constraint(equalTo: titleLabel.trailingAnchor, constant: 8),
+            groupLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
+        ])
         
-        if dueTime != nil, placeName == nil {
-            NSLayoutConstraint.activate([
-                dateLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
-                dateLabel.leadingAnchor.constraint(equalTo: checkButton.trailingAnchor, constant: 16),
-                dateLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16)
-            ])
+        NSLayoutConstraint.activate([
+            dateLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
+            dateLabel.leadingAnchor.constraint(equalTo: checkButton.trailingAnchor, constant: 16),
+        ])
+        
+        NSLayoutConstraint.activate([
+            locationStack.leadingAnchor.constraint(equalTo: checkButton.trailingAnchor, constant: 16),
+            locationStack.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16)
+        ])
+        
+        // 하단 여백 조절 Auto Layout
+        
+        titleLabelBottomAnchorConstraint.isActive = false
+        dateLabelBottomAnchorConstraint.isActive = false
+        locationStackTopAnchorConstraintToDateLabel.isActive = false
+        locationStackTopAnchorConstraintToTitleLabel.isActive = false
+        locationStackBottomAnchorConstraint.isActive = false
+        
+        if dueTime != nil, placeName != nil {
+            locationStackTopAnchorConstraintToDateLabel.isActive = true
+            locationStackBottomAnchorConstraint.isActive = true
         } else if dueTime == nil, placeName != nil {
-            NSLayoutConstraint.activate([
-                locationStack.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
-                locationStack.leadingAnchor.constraint(equalTo: checkButton.trailingAnchor, constant: 16),
-                locationStack.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16)
-            ])
-        } else if dueTime != nil, placeName != nil {
-            NSLayoutConstraint.activate([
-                dateLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
-                dateLabel.leadingAnchor.constraint(equalTo: checkButton.trailingAnchor, constant: 16),
-                locationStack.topAnchor.constraint(equalTo: dateLabel.bottomAnchor, constant: 8),
-                locationStack.leadingAnchor.constraint(equalTo: checkButton.trailingAnchor, constant: 16),
-                locationStack.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16)
-            ])
+            locationStackTopAnchorConstraintToTitleLabel.isActive = true
+            locationStackBottomAnchorConstraint.isActive = true
+        } else if dueTime != nil, placeName == nil {
+            dateLabelBottomAnchorConstraint.isActive = true
+        } else {
+            titleLabelBottomAnchorConstraint.isActive = true
         }
     }
     
     public func resetData() {
         titleLabel.text = ""
         groupLabel.text = ""
+        groupLabel.isHidden = false
         dateLabel.text = ""
         dateLabel.isHidden = false
         locationButton.setTitle("", for: .normal)
@@ -230,7 +239,7 @@ extension TDTableViewCellView {
             groupLabel.text = "#\(groupTitle)"
             groupLabel.textColor = UIColor(hex: groupColor ?? "#5DB075")?.adjustColor(brightnessDecreaseFactor: 0.25, saturationIncreaseFactor: 0.4)
         } else {
-            groupLabel.text = ""
+            groupLabel.isHidden = true
         }
         
         if let dueDateValue = dueTime {

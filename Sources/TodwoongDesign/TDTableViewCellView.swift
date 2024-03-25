@@ -14,12 +14,18 @@ public class TDTableViewCellView: UIView {
     public var onCheckButtonTapped: (() -> Void)?
     public var onLocationButtonTapped: (() -> Void)?
     
-    private lazy var groupLabelWidthConstraint = groupLabel.widthAnchor.constraint(equalToConstant: 0)
-    private lazy var dateLabelBottomAnchorConstraint = dateLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16)
+    private lazy var titleLabelBottomAnchorConstraint =
+    titleLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16)
+    private lazy var groupLabelWidthConstraint =
+    groupLabel.widthAnchor.constraint(equalToConstant: 0)
+    private lazy var dateLabelBottomAnchorConstraint =
+    dateLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16)
     private lazy var locationStackTopAnchorConstraintToTitleLabel =
     locationStack.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10)
     private lazy var locationStackTopAnchorConstraintToDateLabel =
     locationStack.topAnchor.constraint(equalTo: dateLabel.bottomAnchor, constant: 8)
+    private lazy var locationStackBottomAnchorConstraint =
+    locationStack.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16)
     
     // MARK: - UI Properties
     
@@ -177,14 +183,22 @@ extension TDTableViewCellView {
         
         // 하단 여백 조절 Auto Layout
         
+        titleLabelBottomAnchorConstraint.isActive = false
+        dateLabelBottomAnchorConstraint.isActive = false
+        locationStackTopAnchorConstraintToDateLabel.isActive = false
+        locationStackTopAnchorConstraintToTitleLabel.isActive = false
+        locationStackBottomAnchorConstraint.isActive = false
+        
         if dueTime != nil, placeName != nil {
-            dateLabelBottomAnchorConstraint.isActive = false
             locationStackTopAnchorConstraintToDateLabel.isActive = true
-            locationStackTopAnchorConstraintToTitleLabel.isActive = false
-        } else {
-            dateLabelBottomAnchorConstraint.isActive = true
-            locationStackTopAnchorConstraintToDateLabel.isActive = false
+            locationStackBottomAnchorConstraint.isActive = true
+        } else if dueTime == nil, placeName != nil {
             locationStackTopAnchorConstraintToTitleLabel.isActive = true
+            locationStackBottomAnchorConstraint.isActive = true
+        } else if dueTime != nil, placeName == nil {
+            dateLabelBottomAnchorConstraint.isActive = true
+        } else {
+            titleLabelBottomAnchorConstraint.isActive = true
         }
     }
     

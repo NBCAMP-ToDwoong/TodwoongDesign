@@ -39,7 +39,7 @@ public class TDTableViewCellView: UIView {
     
     // MARK: - UI Properties
     
-    private lazy var checkButton: UIButton = {
+    public lazy var checkButton: UIButton = {
         let button = UIButton()
         let symbolConfiguration = UIImage.SymbolConfiguration(pointSize: 28, weight: .bold, scale: .medium)
         button.setPreferredSymbolConfiguration(symbolConfiguration, forImageIn: .normal)

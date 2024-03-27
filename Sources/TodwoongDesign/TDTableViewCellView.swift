@@ -27,11 +27,21 @@ public class TDTableViewCellView: UIView {
     private lazy var locationStackBottomAnchorConstraint =
     locationStack.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16)
     
+    private lazy var titleLabelTralingAnchorConstraintNonActiveGroup =
+    titleLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16)
+    private lazy var titleLabelTralingAnchorConstraintActiveGroup =
+    titleLabel.trailingAnchor.constraint(equalTo: groupLabel.leadingAnchor, constant: -16)
+    private lazy var groupLabelTralingAnchorConstraintNonActiveGroup =
+    groupLabel.leadingAnchor.constraint(equalTo: titleLabel.trailingAnchor, constant: 8)
+    private lazy var groupLabelTralingAnchorConstraintActiveGroup =
+    groupLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16)
+    
+    
     // MARK: - UI Properties
     
-    public lazy var checkButton: UIButton = {
+    private lazy var checkButton: UIButton = {
         let button = UIButton()
-        let symbolConfiguration = UIImage.SymbolConfiguration(pointSize: 22, weight: .medium, scale: .medium)
+        let symbolConfiguration = UIImage.SymbolConfiguration(pointSize: 28, weight: .bold, scale: .medium)
         button.setPreferredSymbolConfiguration(symbolConfiguration, forImageIn: .normal)
         button.setPreferredSymbolConfiguration(symbolConfiguration, forImageIn: .selected)
         button.setImage(UIImage(systemName: "circle"), for: .normal)
@@ -139,9 +149,6 @@ extension TDTableViewCellView {
     private func setUI() {
         backgroundColor = .white
         
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(checkButtonTapped))
-        titleLabel.addGestureRecognizer(tapGesture)
-        
         [checkButton, titleLabel, groupLabel, dateLabel, locationStack].forEach {
             addSubview($0)
         }
@@ -154,21 +161,18 @@ extension TDTableViewCellView {
         NSLayoutConstraint.activate([
             checkButton.topAnchor.constraint(equalTo: topAnchor, constant: 16),
             checkButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            checkButton.widthAnchor.constraint(equalToConstant: 22),
-            checkButton.heightAnchor.constraint(equalToConstant: 22),
+            checkButton.widthAnchor.constraint(equalToConstant: 28),
+            checkButton.heightAnchor.constraint(equalToConstant: 28),
         ])
         
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 16),
-            titleLabel.leadingAnchor.constraint(equalTo: checkButton.trailingAnchor, constant: 16),
-            titleLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16)
+            titleLabel.leadingAnchor.constraint(equalTo: checkButton.trailingAnchor, constant: 10),
         ])
         
         NSLayoutConstraint.activate([
             groupLabel.widthAnchor.constraint(equalToConstant: 80),
             groupLabel.topAnchor.constraint(equalTo: topAnchor, constant: 16),
-            groupLabel.leadingAnchor.constraint(equalTo: titleLabel.trailingAnchor, constant: 8),
-            groupLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
         ])
         
         NSLayoutConstraint.activate([
@@ -188,6 +192,10 @@ extension TDTableViewCellView {
         locationStackTopAnchorConstraintToDateLabel.isActive = false
         locationStackTopAnchorConstraintToTitleLabel.isActive = false
         locationStackBottomAnchorConstraint.isActive = false
+        titleLabelTralingAnchorConstraintNonActiveGroup.isActive = false
+        titleLabelTralingAnchorConstraintActiveGroup.isActive = false
+        groupLabelTralingAnchorConstraintNonActiveGroup.isActive = false
+        groupLabelTralingAnchorConstraintActiveGroup.isActive = false
         
         if dueTime != nil, placeName != nil {
             locationStackTopAnchorConstraintToDateLabel.isActive = true
@@ -199,6 +207,16 @@ extension TDTableViewCellView {
             dateLabelBottomAnchorConstraint.isActive = true
         } else {
             titleLabelBottomAnchorConstraint.isActive = true
+        }
+        
+        if group == nil {
+            groupLabel.isHidden = true
+            titleLabelTralingAnchorConstraintNonActiveGroup.isActive = true
+        } else {
+            groupLabel.isHidden = false
+            titleLabelTralingAnchorConstraintActiveGroup.isActive = true
+            groupLabelTralingAnchorConstraintNonActiveGroup.isActive = true
+            groupLabelTralingAnchorConstraintActiveGroup.isActive = true
         }
     }
     
